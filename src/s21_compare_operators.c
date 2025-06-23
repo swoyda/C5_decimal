@@ -17,7 +17,6 @@ int s21_is_less(s21_decimal s21_decimal_one, s21_decimal s21_decimal_two) {
     for (int i = 2; i >= 0; i--) {
       unsigned int left = s21_decimal_one.bits[i],
                    right = s21_decimal_two.bits[i];
-      // printf("%llu %llu\n", left, right);
       if (left < right) {
         result = 1;
         i = -2;
@@ -39,7 +38,6 @@ int s21_is_less_or_equal(s21_decimal s21_decimal_one,
     result = 1;
   else
     result = 0;
-  // printf("part2.5 %d\n", result);
   return result;
 }
 
@@ -72,20 +70,15 @@ int s21_is_equal(s21_decimal s21_decimal_one, s21_decimal s21_decimal_two) {
     result = 1;
   else if (sign_one != sign_two) {
     result = 0;
-  } else {  // s21_decimal_to_bits(s21_decimal_one);
+  } else {
     s21_remove_zeros(&s21_decimal_one);
     s21_remove_zeros(&s21_decimal_two);
 
     s21_decimal_one.bits[EXP] = s21_decimal_one.bits[EXP] << 1 >> 1;
     s21_decimal_two.bits[EXP] = s21_decimal_two.bits[EXP] << 1 >> 1;
-    // s21_decimal_to_bits(s21_decimal_one);
-    // s21_decimal_to_bits(s21_decimal_two);
     s21_normalization(&s21_decimal_one, &s21_decimal_two);
-    // s21_decimal_to_bits(s21_decimal_one);
-    // s21_decimal_to_bits(s21_decimal_two);
     for (int i = 0; i < 4; i++) {
       if (s21_decimal_one.bits[i] != s21_decimal_two.bits[i]) result = 0;
-      // printf("%u %u\n", s21_decimal_one.bits[i], s21_decimal_two.bits[i]);
     }
   }
   return result;
