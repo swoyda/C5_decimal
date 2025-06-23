@@ -23,11 +23,6 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   result->bits[EXP] |= (value_1.bits[EXP] > value_2.bits[EXP])
                            ? value_1.bits[EXP]
                            : value_2.bits[EXP];
-  // s21_decimal_to_bits(value_1);
-  // s21_decimal_to_bits(value_2);
-  //         printf("a\n");
-
-  //     s21_decimal_to_bits(*result);
   while (bitCounter <= FIRST_BIT_EXP) {
     shift = MIN_INT << manPartCounter;
     if (manPartCounter == MAN_LIM) {
@@ -35,7 +30,6 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       manPartCounter = 0;
     }
     if (bitCounter == FIRST_BIT_EXP) {
-      // printf("part err\n");
       if (bit_3) {
         int exp_res;
         s21_div_10(result, 1);
@@ -80,8 +74,6 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
     } else
       bit_3 = s21_sub_bits(bit_2, bit_1, bit_3, shift, manNumber, result);
 
-    // printf("[%d] %d + %d + %d = %d\n", bitCounter, bit_1, bit_2, bit_3,
-    // s21_get_bit(*result, bitCounter));
     manPartCounter++;
     bitCounter++;
   }
@@ -102,9 +94,7 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   if (rem_buf) {
     s21_decimal one = {{0x00000001, 0x00000000, 0x00000000, result->bits[EXP]}};
     error = s21_add(*result, one, result);
-    // s21_decimal_to_bits(*result);
   }
-  // printf("%d\n", (int)(result->bits[3] >> 16));
 
   return error;
 }
@@ -113,7 +103,6 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   int error;
   value_2.bits[EXP] ^= MINUS;
   error = s21_add(value_1, value_2, result);
-  // if(error == 1) error = 2;
   return error;
 }
 
@@ -169,21 +158,12 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
                      s21_count_bit(bufferResultSub.bits[1]) +
                      s21_count_bit(bufferResultSub.bits[2]);
     bufferValue = value_2;
-    // s21_decimal_to_bits(bufferResultSub);
-    // s21_decimal_to_bits(bufferValue);
 
     error = s21_decimal_shift(result, 1);
-    // printf("shift - %d\n", shift);
-    // printf("%d\n", s21_is_less_or_equal(bufferResultSub, value_2));
     dividerLength = s21_count_bit(bufferValue.bits[0]) +
                     s21_count_bit(bufferValue.bits[1]) +
                     s21_count_bit(bufferValue.bits[2]);
-    // if (dividendLength > dividerLength) {
-    //     shift = dividendLength - dividerLength;
-    // }
     s21_decimal_shift(&bufferValue, shift);
-    // s21_decimal_to_bits(bufferResultSub);
-    // s21_decimal_to_bits(bufferValue);
 
     if (s21_is_greater_or_equal(bufferResultSub, bufferValue)) {
       for (int manNumber = 0; manNumber <= EXP; manNumber++)
@@ -191,45 +171,26 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
       s21_sub(bufferResultSub, bufferValue, &bufferResult);
       bufferResultSub = bufferResult;
       result->bits[0] |= 1;
-      // s21_decimal_to_bits(*result);
+      
     } else if (shift == 0 && s21_is_zero(bufferResultSub)) {
       break;
     } else if (shift == 0) {
       remainderCounter--;
       remainder += (s21_get_bit(bufferResultSub, dividendLength - 1) *
                     pow(2, remainderCounter));
-      // printf("%f --- \n", remainder);
+      
       bufferResultSub.bits[0] = 0;
       result->bits[0] >>= 1;
       exp++;
-      // s21_decimal_to_bits(*result);
     }
-    // if (bufferResultSub.bits[0] == 0) {
-    //     s21_decimal_shift(result, shift);
-    //     // result->bits[0] += remainder;
-    //     break;
-    // }
     if (shift != 0) shift--;
   }
-  // for (int manNumber = 0; manNumber <= EXP; manNumber++) {
-  //     bufferResult.bits[manNumber] = 0;
-  //     bufferValue.bits[manNumber] = 0;
-  // }
-  // bufferValue.bits[0] += 10;
-  // error = s21_mul(*result, bufferValue, &bufferResult);
-
-  // bufferValue.bits[0] = 0;
   s21_from_float_to_decimal(remainder, &bufferValue);
 
   for (int manNumber = 0; manNumber <= EXP; manNumber++)
     bufferResult.bits[manNumber] = 0;
-  // s21_decimal_to_bits(bufferValue);
   s21_add(*result, bufferValue, &bufferResult);
-  // s21_decimal_to_bits(bufferResult);
   *result = bufferResult;
-  // printf("\n");
-  // s21_decimal_to_bits(*result);
-  // result->bits[EXP] = exp << DEGREE;
 
   return error;
 }
@@ -299,14 +260,12 @@ int s21_normalization(s21_decimal *value_1, s21_decimal *value_2) {
           flagPer = 1;
         }
       }
-      // printf("%ddddd\n", s21_count_bit(perepoln));
       if (s21_count_bit(perepoln) > MAN_LIM) {
         part3 = perepoln >> MAN_LIM;
         if (manNumber > 0) error = 1;
       }
 
       if (i == exp_res - 1) {
-        // printf("%lld - por\n%lld - new\n", portablePartMan, newNumber);
         smallerNumber.bits[manNumber] += part2;
         part2 = portablePartMan;
         if (manNumber == 2) smallerNumber.bits[manNumber] += part3;
@@ -316,7 +275,6 @@ int s21_normalization(s21_decimal *value_1, s21_decimal *value_2) {
       }
     }
   }
-  // printf("%d\n", decrease);
   portablePartMan = 0;
 
   if (decrease) {
