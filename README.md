@@ -19,6 +19,6 @@
 
 После сборки запустите make test
 
-Запуск и вывод тестов make gcov_report
+Запуск и вывод тестов и их покрытие make gcov_report
 
 Проверка утечки памяти make valgrind
